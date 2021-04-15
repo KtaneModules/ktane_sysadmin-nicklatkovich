@@ -361,11 +361,33 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1441613757826848}
-  m_Text: "<color=#2f2> > status</color>\nDumped servers: <color=#88f>0</color>/<color=#88f>7</color>\r\nDamaged
-    clusters: <color=#88f>10</color>\r\n<color=#2f2> > serverlist\r</color>\nServer
-    <color=yellow>#92</color>: <color=#88f>2</color> TB\r\nServer <color=yellow>#39</color>:
-    <color=#88f>5</color> TB\r\n<color=red>ERROR</color>: unable connect to server\nClaster
-    <color=yellow>#85</color> damaged\r\n<color=#2f2> > _</color> \n1\n2\n3\n4\n5"
+  m_Text: '<color=#2f2> > status</color>
+
+    Allocated servers: <color=#44f>0</color>/<color=#44f>7</color>
+
+    Damaged nodes: <color=#44f>10</color>
+
+    Recovered nodes: <color=#44f>0</color>
+
+    <color=#2f2> > serverlist</color>
+
+    Server <color=yellow>#19</color>: <color=#44f> 1</color> TB
+
+    <color=red>ERROR</color>: unable connect to server
+
+    Node <color=yellow>#34</color> damaged
+
+    <color=#2f2> > debug 34</color>
+
+    Node <color=yellow>#34</color> damaged
+
+    Error code: <color=red>K45F</color>
+
+    <color=#2f2> > shit</color>
+
+    <color=red>ERROR</color>: Unknown command
+
+    <color=#2f2> > _</color>'
   m_OffsetZ: 0
   m_CharacterSize: 1
   m_LineSpacing: 1
