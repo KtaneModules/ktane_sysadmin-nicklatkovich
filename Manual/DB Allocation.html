@@ -9,6 +9,51 @@
     <link rel="stylesheet" type="text/css" href="css/normalize.css" />
     <link rel="stylesheet" type="text/css" href="css/main.css" />
     <script src="js/ktane-utils.js"></script>
+    <script>
+        const data = [
+            ["I2S2", "ZT16", "A70S", "A5CD", "8TGW", "8QNN", "J1XJ", "J6H9"],
+            ["6M3A", "UIT5", "O6A4", "NQ96", "RL14", "A56E", "1N0U", "P77K"],
+            ["00IX", "2250", "4TDG", "VY9T", "RE3U", "KN06", "JK11", "BXH3"],
+            ["QEI5", "H7TK", "QO67", "87HB", "LF94", "4Y96", "3XW1", "F177"],
+            ["6767", "050D", "EYE5", "9YOX", "8774", "H13D", "97R4", "9PI9"],
+            ["2LX9", "V3I4", "1OQC", "SA50", "OV54", "96A5", "QUG0", "43S3"],
+            ["7032", "8037", "N322", "0DIM", "UN3M", "131R", "5368", "5WZS"],
+            ["1I28", "8ML6", "E2VI", "WIGJ", "MU91", "43B0", "W4B9", "BZEL"],
+            ["1612", "W0G0", "7YZD", "HAXL", "F834", "62S3", "39P3", "JE46"],
+            ["035H", "K07C", "693I", "WHP3", "45J5", "L95Q", "29C2", "MZ38"],
+            ["19O4", "975Q", "4WJK", "1PIM", "W750", "9I94", "N3M3", "DHZO"],
+            ["8O9W", "53IH", "658Q", "A9CX", "SQ55", "9889", "O2BF", "7EH5"],
+            ["3QVY", "C10C", "EGUI", "KC23", "4IVZ", "F48V", "Y4X4", "14PN"],
+            ["7E0J", "V0GK", "8IHF", "G977", "H51Q", "217H", "M20P", "73R7"],
+            ["C1DW", "OT57", "S5K6", "4O6H", "34X2", "73UQ", "B9S3", "78H5"],
+            ["RWS4", "6K9D", "0P3P", "ZH6H", "24GR", "8NE2", "5P5V", "6I95"],
+            ["88P8", "Z98X", "7G21", "KS06", "LY08", "1I7Z", "S1XD", "62QE"],
+        ];
+        document.addEventListener("DOMContentLoaded", () => {
+            const table = document.getElementById("error-codes");
+            for (const row of data) {
+                const tr = table.appendChild(document.createElement("tr"));
+                for (const error of row) {
+                    const td = tr.appendChild(document.createElement("td"));
+                    td.innerText = error;
+                }
+            }
+        });
+    </script>
+    <style>
+        code {
+            background-color: black;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 2px 8px;
+            color: lightgreen;
+            font-weight: bold;
+        }
+
+        li {
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+    </style>
 </head>
 
 <body>
@@ -23,8 +68,99 @@
             <div class="page-content">
                 <img src="img/Component/Module Name.svg" class="diagram" />
                 <h2>On the Subject of DB Allocation</h2>
-                <p class="flavour-text">...</p>
-                <p>...</p>
+                <p class="flavour-text">sudo rm -rf /*</p>
+
+                <p>The module is a console. When it is waiting for command input you will see green <code>&nbsp;> _</code> symbols.</p>
+
+                <p>This console is connected to a bus topology network. The network contains 100 nodes. Each node is numbered from 0 to 99 without repetitions. All nodes are sorted by their id. Up to ten of these nodes are servers, the rest are data storages. Each storage is 1 TB in size.</p>
+
+                <p>If the node is damaged, then find the error code in the table on page #3. Then calculate the value in the last column on the same row (using the table on the current page). If this value is greater than 10, then subtract 10 from it until the number is in the range [0-9]. Find all codes in the same column as the error code that contains the calculated value. The recovering code will be the first characters of the found codes, starting with the next one after the error code. This action is looped vertically, so after going through the last row, go back to the first. If the recovering code is empty, then it is <code>NULL</code></p>
+
+                <p>Information on how to solve the module and in what cases the strikes will be received can be found on page #2. Page #2 contains a list and description of the commands available for entering into the console.</p>
+
+                <p>All commands (including codes) are case insensitive.</p>
+
+                <table style="margin: auto;">
+                    <tr>
+                        <td>T</td>
+                        <td>Starting time in minutes</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td>Batteries count</td>
+                    </tr>
+                    <tr>
+                        <td>I</td>
+                        <td>Indicators count</td>
+                    </tr>
+                    <tr>
+                        <td>K</td>
+                        <td>Max least significant digit of two factor codes.<br>
+                            If there are no two factor codes, use solved modules count</td>
+                    </tr>
+                    <tr>
+                        <td>R</td>
+                        <td>Remaining minutes count</td>
+                    </tr>
+                    <tr>
+                        <td>M</td>
+                        <td>Modules count</td>
+                    </tr>
+                    <tr>
+                        <td>S</td>
+                        <td>Min digit in serial number</td>
+                    </tr>
+                    <tr>
+                        <td>E</td>
+                        <td>Strikes count</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="page-footer relative-footer">Page 1 of 1</div>
+        </div>
+        <div class="page page-bg-07">
+            <div class="page-header">
+                <span class="page-header-doc-title">
+                    Keep Talking and Nobody Explodes Mod
+                </span>
+                <span class="page-header-section-title">DB Allocation</span>
+            </div>
+            <div class="page-content">
+
+                <h2>Commands:</h2>
+                <ul>
+                    <li><code>serverlist</code> - Displays information about all servers. For each server, information about the id of the node and the required storage size for work will be provided. If storage nodes have already been allocated to this server, then the range of allocated nodes will also be displayed.</li>
+                    <li><code>status</code> - Displays general information about the current state of the network. Here you can see the number of servers to which the storage nodes have been allocated; the required number of allocation that need to be made for the module to be solved; number of damaged and recovered nodes.</li>
+                    <li><code>allocate {NODE_ID} {DIRECTION}</code> - Allocates the required number of nodes in the specified DIRECTION to the server with the specified NODE_ID. Direction must be one of the following: <code>left</code>, <code>down</code> (decreasing id), <code>right</code> or <code>up</code> (increasing id). In order for the command to work correctly, the following conditions must be met:
+                        <ul>
+                            <li>The selected node must be a server;</li>
+                            <li>* The allocation nodes must be data storages (not servers);</li>
+                            <li>There should be no attempts to allocate nodes with id less than 0 or greater than 99;</li>
+                            <li>The server node, as well as the allocation nodes, should not be damaged;</li>
+                            <li>* The allocation nodes should not be allocated to another server.</li>
+                        </ul>
+                        If the conditions marked with an asterisk are not met, the network will be reverted and the strike will be counted.
+                    </li>
+                    <li><code>debug {NODE_ID}</code> - Checks the status of a node by its NODE_ID. If it is damaged, then an error code will be displayed in the result.</li>
+                    <li><code>recover {NODE_ID} {FIX_CODE}</code> - Attempts to recover data on a node by its NODE_ID using FIX_CODE. If FIX_CODE is correct, then the node will be recovered. If FIX_CODE is incorrect or this node is not damaged, then the network will be reverted and a strike will be counted.</li>
+                    <li><code>commit</code> - Applies all changes. If the required number of assignments is reached, the module will be solved, otherwise the network will be reverted and a strike will be counted.</li>
+                    <li><code>revert</code> - Reverts the network and gives a strike.</li>
+                    <li><code>clear</code> - Clears the console</li>
+                </ul>
+            </div>
+            <div class="page-footer relative-footer">Page 1 of 1</div>
+        </div>
+        <div class="page page-bg-05">
+            <div class="page-header">
+                <span class="page-header-doc-title">
+                    Keep Talking and Nobody Explodes Mod
+                </span>
+                <span class="page-header-section-title">DB Allocation</span>
+            </div>
+            <div class="page-content">
+                <table>
+                    <tbody id="error-codes"></tbody>
+                </table>
             </div>
             <div class="page-footer relative-footer">Page 1 of 1</div>
         </div>
