@@ -413,6 +413,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TextField: {fileID: 102129915536593918}
+  BombInfo: {fileID: 114479555886420546}
+  BombModule: {fileID: 114722444644224240}
 --- !u!114 &114414563420248544
 MonoBehaviour:
   m_ObjectHideFlags: 1
