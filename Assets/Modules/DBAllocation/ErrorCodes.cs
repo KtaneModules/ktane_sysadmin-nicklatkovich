@@ -82,10 +82,10 @@ public static class ErrorCodes {
 		return data[index.y][index.x];
 	}
 
-	public static string ValidRecoveryCode(Vector2Int errorCodeIndex, DBAllocationModule module) {
+	public static string ValidRecoveryCode(Vector2Int errorCodeIndex, SysadminModule module) {
 		int value = CalculateValue(errorCodeIndex, module) % 10;
 		if (value < 0) value = 10 - value;
-		Debug.LogFormat("[DB Allocation #{0}] Recovering value for error code {1}: {2}", module.moduleId,
+		Debug.LogFormat("[Sysadmin #{0}] Recovering value for error code {1}: {2}", module.moduleId,
 			data[errorCodeIndex.y][errorCodeIndex.x], value);
 		List<string> codes = new List<string>();
 		for (int i = 1; i <= ERROR_CODE_ROWS_COUNT; i++) {
@@ -95,7 +95,7 @@ public static class ErrorCodes {
 		return codes.Select((c) => c[0]).Join("");
 	}
 
-	public static int CalculateValue(Vector2Int errorCodeIndex, DBAllocationModule module) {
+	public static int CalculateValue(Vector2Int errorCodeIndex, SysadminModule module) {
 		string instructions = lastColumn[errorCodeIndex.y];
 		Debug.Log(instructions);
 		int a = Mutation(instructions[0], module);
@@ -104,7 +104,7 @@ public static class ErrorCodes {
 		return instructions[2] == '+' ? a + b : a - b;
 	}
 
-	public static int Mutation(char symbol, DBAllocationModule module) {
+	public static int Mutation(char symbol, SysadminModule module) {
 		if (symbol >= '1' && symbol <= '9') return symbol - '0';
 		switch (symbol) {
 			case 'T': return module.startingTimeInMinutes;

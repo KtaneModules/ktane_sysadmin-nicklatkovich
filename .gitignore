@@ -31,8 +31,8 @@ Assembly-CSharp*
 obj/
 Models/*
 
-# DBAllocation
-!Assets/Modules/DBAllocation.meta
-!Assets/Modules/DBAllocation
-!Manual/img/Component/DB Allocation.svg
-!Manual/pdfs/Modules/DB Allocation.pdf
+# Sysadmin
+!Assets/Modules/Sysadmin.meta
+!Assets/Modules/Sysadmin
+!Manual/img/Component/Sysadmin.svg
+!Manual/pdfs/Modules/Sysadmin.pdf
