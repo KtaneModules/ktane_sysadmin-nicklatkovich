@@ -23,6 +23,9 @@ public class SysadminModule : MonoBehaviour {
 	private bool _solved = false;
 	public bool solved { get { return _solved; } }
 
+	private bool _forceSolved = true;
+	public bool forceSolved { get { return _forceSolved; } }
+
 	private int _moduleId = 0;
 	public int moduleId { get { return _moduleId; } }
 
@@ -127,6 +130,15 @@ public class SysadminModule : MonoBehaviour {
 		}
 	}
 
+	public void TwitchHandleForcedSolve() {
+		if (solved) return;
+		Debug.LogFormat("[Sysadmin #{0}] Module force-solved", _moduleId);
+		_solved = true;
+		typing = false;
+		WriteLine("Module force solved");
+		BombModule.HandlePass();
+	}
+
 	private IEnumerator Virus() {
 		while (!solved && damagedNodeIds.Count + recoveredNodesCount < MAX_DAMAGES_COUNT) {
 			Damage();
@@ -207,6 +219,7 @@ public class SysadminModule : MonoBehaviour {
 	}
 
 	private void EndCommandProcessing() {
+		if (solved) return;
 		command = "";
 		typing = true;
 		shouldUpdateText = true;
@@ -290,6 +303,7 @@ public class SysadminModule : MonoBehaviour {
 			int nodeId = int.Parse(args[1]);
 			text[linePointer] = "Debugging...";
 			yield return Loader(.2f, 16, 9);
+			if (solved) yield break;
 			if (damagedNodeIds.Contains(nodeId)) {
 				WriteLine(string.Format("Node <color=yellow>#{0}</color> damaged", nodeId));
 				WriteLine(string.Format("Error code: <color=red>{0}</color>",
@@ -317,6 +331,7 @@ public class SysadminModule : MonoBehaviour {
 				Debug.LogFormat("[Sysadmin #{0}] Trying to recover operational node #{1}", moduleId, nodeId);
 				text[linePointer] = "Recovering...";
 				yield return Loader(.2f, 32, 10);
+				if (solved) yield break;
 				WriteLine(string.Format("<color=red>ERROR</color> Node <color=yellow>#{0}</color> not damaged",
 					nodeId));
 				yield return HandleStrike();
@@ -329,8 +344,10 @@ public class SysadminModule : MonoBehaviour {
 					moduleId, nodeId, args[2].ToUpper(), validRecoveryCode);
 				text[linePointer] = "Recovering...";
 				yield return Loader(.2f, 32, 10);
+				if (solved) yield break;
 				WriteLine("<color=red>ERROR</color> Invalid recovery code");
 				yield return HandleStrike();
+				if (solved) yield break;
 				EndCommandProcessing();
 				yield break;
 			}
@@ -338,6 +355,7 @@ public class SysadminModule : MonoBehaviour {
 				validRecoveryCode, nodeId);
 			text[linePointer] = "Recovering...";
 			yield return Loader(.2f, 32, 10);
+			if (solved) yield break;
 			WriteLine(string.Format("Node <color=yellow>#{0}</color> recovered", nodeId));
 			damagedNodeIds.Remove(nodeId);
 			recoveredNodeIds.Add(nodeId);
@@ -381,6 +399,7 @@ public class SysadminModule : MonoBehaviour {
 			}
 			text[linePointer] = "Allocation...";
 			yield return Loader(.2f, 16, 10);
+			if (solved) yield break;
 			int direction = args[2] == "left" || args[2] == "down" ? -1 : 1;
 			Server server = servers.First((s) => s.id == nodeId);
 			if (server.allocation != null) {
@@ -410,6 +429,7 @@ public class SysadminModule : MonoBehaviour {
 					WriteLine("<color=red>ERROR</color>: unable allocate");
 					WriteLine(string.Format("Node <color=yellow>#{0}</color> is not data storage", storageId));
 					yield return HandleStrike();
+					if (solved) yield break;
 					EndCommandProcessing();
 					yield break;
 				}
@@ -420,6 +440,7 @@ public class SysadminModule : MonoBehaviour {
 					WriteLine("<color=red>ERROR</color>: unable allocate");
 					WriteLine(string.Format("Node <color=yellow>#{0}</color> already allocated", storageId));
 					yield return HandleStrike();
+					if (solved) yield break;
 					EndCommandProcessing();
 					yield break;
 				}
@@ -443,12 +464,15 @@ public class SysadminModule : MonoBehaviour {
 		if (command == "commit") {
 			text[linePointer] = "Committing...";
 			yield return Loader(.2f, 48, 10);
+			if (solved) yield break;
 			if (allocationsCount >= requiredAllocationsCount) {
 				Debug.LogFormat("[Sysadmin #{0}] Committed", moduleId);
 				WriteLine("Allocation completed");
 				text[linePointer] = "Solving module...";
 				yield return Loader(.2f, 16, 14);
+				if (solved) yield break;
 				WriteLine("Module solved");
+				_forceSolved = false;
 				BombModule.HandlePass();
 				shouldUpdateText = true;
 				yield break;
@@ -456,6 +480,7 @@ public class SysadminModule : MonoBehaviour {
 				Debug.LogFormat("[Sysadmin #{0}] Trying to commit without required allocations", moduleId);
 				WriteLine("Allocation not completed");
 				yield return HandleStrike();
+				if (solved) yield break;
 				EndCommandProcessing();
 				yield break;
 			}
@@ -471,8 +496,10 @@ public class SysadminModule : MonoBehaviour {
 		allocationsCount = 0;
 		for (int i = 0; i < 10; i++) Damage();
 		yield return Loader(.2f, 48, 25);
+		if (solved) yield break;
 		text[linePointer] = "<color=red>STRIKE</color>...";
 		yield return Loader(.2f, 8, 25);
+		if (solved) yield break;
 		BombModule.HandleStrike();
 		for (int i = 0; i < LINES_COUNT; i++) text[i] = "";
 	}
@@ -485,6 +512,7 @@ public class SysadminModule : MonoBehaviour {
 
 	private IEnumerator Loader(float interval, int steps, int pos) {
 		for (int i = 0; i < steps; i++) {
+			if (_solved) yield break;
 			text[linePointer] = text[linePointer].Remove(pos) + Enumerable.Range(0, 3).Select((j) => (
 				i % 4 <= j ? ' ' : '.'
 			)).Join("");
