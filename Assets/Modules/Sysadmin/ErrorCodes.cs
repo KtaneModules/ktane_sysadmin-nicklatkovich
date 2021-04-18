@@ -84,7 +84,7 @@ public static class ErrorCodes {
 
 	public static string ValidRecoveryCode(Vector2Int errorCodeIndex, SysadminModule module) {
 		int value = CalculateValue(errorCodeIndex, module) % 10;
-		if (value < 0) value = 10 - value;
+		if (value < 0) value = 10 + value;
 		Debug.LogFormat("[Sysadmin #{0}] Recovering value for error code {1}: {2}", module.moduleId,
 			data[errorCodeIndex.y][errorCodeIndex.x], value);
 		List<string> codes = new List<string>();

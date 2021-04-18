@@ -33,5 +33,5 @@ Models/*
 
 # Sysadmin
 !Assets/Modules/Sysadmin.meta
-!Assets/Modules/Sysadmin
+!Assets/Modules/Sysadmin/
 !Manual/img/Component/Sysadmin.svg
