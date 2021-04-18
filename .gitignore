@@ -24,7 +24,7 @@ Manual/img/*
 !Manual/img/Component/
 Manual/img/Component/*
 Manual/js/
-Manual/pdfs/*
+Manual/pdfs/**/.gitignore
 
 Assembly-CSharp*
 /*.sln
@@ -35,4 +35,3 @@ Models/*
 !Assets/Modules/Sysadmin.meta
 !Assets/Modules/Sysadmin
 !Manual/img/Component/Sysadmin.svg
-!Manual/pdfs/Modules/Sysadmin.pdf

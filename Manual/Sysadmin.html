@@ -118,7 +118,7 @@
                 <span class="page-header-section-title">Sysadmin</span>
             </div>
             <div class="page-content">
-                <img src="img/Component/Module Name.svg" class="diagram" />
+                <img src="img/Component/Sysadmin.svg" class="diagram" />
                 <h2>On the Subject of Sysadmin</h2>
                 <p class="flavour-text">sudo rm -rf /*</p>
 
@@ -126,7 +126,7 @@
 
                 <p>This console is connected to a bus topology network. The network contains 100 nodes. Each node is numbered from 0 to 99 without repetitions. All nodes are sorted by their id. Up to ten of these nodes are servers, the rest are data storages. Each storage is 1 TB in size. There is a virus on the network that damages the nodes. You can fix it, but you need to do it as soon as possible - the longer you are idle, the more nodes will be damaged.</p>
 
-                <p>If the node is damaged, then find the error code in the table on page #3. Then calculate the value in the last column on the same row (using the table on the current page). If this value is greater than 10 or less than 0, then subtract or add 10 until the number is in the range [0-9]. Find all codes in the same column as the error code that contains the calculated value. The recovering code will be the first characters of the found codes, starting with the next one after the error code. This action is looped vertically, so after going through the last row, go back to the first.</p>
+                <p>If the node is damaged, then find the error code in the table on page #3. Then calculate the value in the last column on the same row (using the table on the current page). If this value is greater than 9 or less than 0, then subtract or add 10 until the number is in the range [0-9]. In the same column as the error code, find all codes that contains the calculated value. The recovering code is equal to the first characters of the found codes, starting from the next one after the error code and further down. This action is looped vertically, so after going through the last row, go back to the first.</p>
 
                 <p>Information on how to solve the module and in what cases the strikes will be received can be found on page #2. Page #2 contains a list and description of the commands available for entering into the console.</p>
 
@@ -172,7 +172,7 @@
                     </tr>
                 </table>
             </div>
-            <div class="page-footer relative-footer">Page 1 of 1</div>
+            <div class="page-footer relative-footer">Page 1 of 3</div>
         </div>
         <div class="page page-bg-07">
             <div class="page-header">
@@ -195,16 +195,15 @@
                             <li>The server node, as well as the allocation nodes, should not be damaged;</li>
                             <li>* The allocation nodes should not be allocated to another server.</li>
                         </ul>
-                        If the conditions marked with an asterisk are not met, the network will be reverted and the strike will be counted.
-                    </li>
+                        If the conditions marked with an asterisk are not met, all allocations will be reverted and the strike will be counted.</li>
                     <li><code>debug {NODE_ID}</code> - Checks the status of a node by its NODE_ID. If it is damaged, then an error code will be displayed in the result.</li>
-                    <li><code>recover {NODE_ID} {FIX_CODE}</code> - Attempts to recover data on a node by its NODE_ID using FIX_CODE. If FIX_CODE is correct, then the node will be recovered. If FIX_CODE is incorrect or this node is not damaged, then the network will be reverted and a strike will be counted.</li>
-                    <li><code>commit</code> - Applies all changes. If the required number of assignments is reached, the module will be solved, otherwise the network will be reverted and a strike will be counted.</li>
-                    <li><code>revert</code> - Reverts the network and gives a strike.</li>
+                    <li><code>recover {NODE_ID} {FIX_CODE}</code> - Attempts to recover data on a node by its NODE_ID using FIX_CODE. If FIX_CODE is correct, then the node will be recovered. If FIX_CODE is incorrect or this node is not damaged, then all allocations will be reverted and a strike will be counted.</li>
+                    <li><code>commit</code> - Applies all changes. If the required number of allocations is reached, the module will be solved, otherwise all allocations will be reverted and a strike will be counted.</li>
+                    <li><code>revert</code> - Reverts all allocations and gives a strike.</li>
                     <li><code>clear</code> - Clears the console</li>
                 </ul>
             </div>
-            <div class="page-footer relative-footer">Page 1 of 1</div>
+            <div class="page-footer relative-footer">Page 2 of 3</div>
         </div>
         <div class="page page-bg-05">
             <div class="page-header">
@@ -218,7 +217,7 @@
                     <tbody id="error-codes" style="text-align: center;"></tbody>
                 </table>
             </div>
-            <div class="page-footer relative-footer">Page 1 of 1</div>
+            <div class="page-footer relative-footer">Page 3 of 3</div>
         </div>
     </div>
 </body>
