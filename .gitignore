@@ -28,6 +28,7 @@ Manual/pdfs/**/.gitignore
 
 Assembly-CSharp*
 /*.sln
+/*.csproj
 obj/
 Models/*
 

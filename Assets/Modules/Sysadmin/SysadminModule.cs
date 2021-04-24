@@ -12,6 +12,8 @@ public class SysadminModule : MonoBehaviour {
 	private const string INPUT_PREFIX = "<color=#2f2> > ";
 	private const string NUMBER_COLOR = "#44f";
 
+	public static HashSet<string> allErrorCodes { get { return new HashSet<string>(ErrorCodes.data.SelectMany(i => i)); } }
+
 	private static int moduleIdCounter = 1;
 
 	public TextMesh TextField;
@@ -35,6 +37,19 @@ public class SysadminModule : MonoBehaviour {
 	private int _startingTimeInMinutes = 0;
 	public int startingTimeInMinutes { get { return _startingTimeInMinutes; } }
 
+	private HashSet<string> _fixedErrorCodes = new HashSet<string>();
+	public HashSet<string> fixedErrorCodes { get { return new HashSet<string>(_fixedErrorCodes); } }
+
+	private int _linePointer = LINES_COUNT - 1;
+	public int linePointer {
+		get { return _linePointer; }
+		private set {
+			if (_linePointer == value) return;
+			_linePointer = value;
+			linesCount++;
+		}
+	}
+
 	private class Server {
 		public readonly int id;
 		public readonly int size;
@@ -48,9 +63,9 @@ public class SysadminModule : MonoBehaviour {
 	private bool typing = false;
 	private bool selected = false;
 	private bool shouldUpdateText = true;
+	private int linesCount = 1;
 	private int allocationsCount = 0;
 	private int requiredAllocationsCount = 0;
-	private int linePointer = LINES_COUNT - 1;
 	private string command = "";
 	private Server[] servers;
 	private string[] text = new string[LINES_COUNT];
@@ -271,16 +286,8 @@ public class SysadminModule : MonoBehaviour {
 					);
 				} else {
 					Vector2Int allocation = (Vector2Int)server.allocation;
-					WriteLine(
-						string.Format(
-							new string[] {
-								"Server <color=yellow>{0}</color>:",
-								"<color={1}>{2}</color> TB",
-								"<color=yellow>[{3}-{4}]</color>",
-							}.Join(" "), ("#" + server.id).PadLeft(3), NUMBER_COLOR, server.size.ToString().PadLeft(2),
-							allocation.x, allocation.y
-						)
-					);
+					string output = "Server <color=yellow>{0}</color>: <color={1}>{2}</color> TB <color=yellow>[{3}-{4}]</color>";
+					WriteLine(string.Format(output, ("#" + server.id).PadLeft(3), NUMBER_COLOR, server.size.ToString().PadLeft(2), allocation.x, allocation.y));
 				}
 			}
 			EndCommandProcessing();
@@ -295,8 +302,7 @@ public class SysadminModule : MonoBehaviour {
 			}
 			if (!Regex.IsMatch(args[1], @"^(0|[1-9]\d?)$")) {
 				WriteLine("<color=red>ERROR</color>: invalid 1st arg");
-				WriteLine(string.Format("expected number in range [<color={0}>0</color>-<color={0}>99</color>]",
-					NUMBER_COLOR));
+				WriteLine(string.Format("expected number in range [<color={0}>0</color>-<color={0}>99</color>]", NUMBER_COLOR));
 				EndCommandProcessing();
 				yield break;
 			}
@@ -306,8 +312,7 @@ public class SysadminModule : MonoBehaviour {
 			if (solved) yield break;
 			if (damagedNodeIds.Contains(nodeId)) {
 				WriteLine(string.Format("Node <color=yellow>#{0}</color> damaged", nodeId));
-				WriteLine(string.Format("Error code: <color=red>{0}</color>",
-					ErrorCodes.ErrorCode(errorCodes[nodeId])));
+				WriteLine(string.Format("Error code: <color=red>{0}</color>", ErrorCodes.ErrorCode(errorCodes[nodeId])));
 			} else WriteLine(string.Format("Node <color=yellow>#{0}</color> operational", nodeId));
 			EndCommandProcessing();
 			yield break;
@@ -321,8 +326,7 @@ public class SysadminModule : MonoBehaviour {
 			}
 			if (!Regex.IsMatch(args[1], @"^(0|[1-9]\d?)$")) {
 				WriteLine("<color=red>ERROR</color>: invalid 1st arg");
-				WriteLine(string.Format("expected number in range [<color={0}>0</color>-<color={0}>99</color>]",
-					NUMBER_COLOR));
+				WriteLine(string.Format("expected number in range [<color={0}>0</color>-<color={0}>99</color>]", NUMBER_COLOR));
 				EndCommandProcessing();
 				yield break;
 			}
@@ -332,16 +336,14 @@ public class SysadminModule : MonoBehaviour {
 				text[linePointer] = "Recovering...";
 				yield return Loader(.2f, 32, 10);
 				if (solved) yield break;
-				WriteLine(string.Format("<color=red>ERROR</color> Node <color=yellow>#{0}</color> not damaged",
-					nodeId));
+				WriteLine(string.Format("<color=red>ERROR</color> Node <color=yellow>#{0}</color> not damaged", nodeId));
 				yield return HandleStrike();
 				EndCommandProcessing();
 				yield break;
 			}
 			string validRecoveryCode = ErrorCodes.ValidRecoveryCode(errorCodes[nodeId], this);
 			if (validRecoveryCode != args[2].ToUpper()) {
-				Debug.LogFormat("[Sysadmin #{0}] Invalid recovery code for #{1}. Entered: {2}. Expected: {3}",
-					moduleId, nodeId, args[2].ToUpper(), validRecoveryCode);
+				Debug.LogFormat("[Sysadmin #{0}] Invalid recovery code for #{1}. Entered: {2}. Expected: {3}", moduleId, nodeId, args[2].ToUpper(), validRecoveryCode);
 				text[linePointer] = "Recovering...";
 				yield return Loader(.2f, 32, 10);
 				if (solved) yield break;
@@ -351,8 +353,8 @@ public class SysadminModule : MonoBehaviour {
 				EndCommandProcessing();
 				yield break;
 			}
-			Debug.LogFormat("[Sysadmin #{0}] Recovering code {1} is valid for node #{2}", moduleId,
-				validRecoveryCode, nodeId);
+			_fixedErrorCodes.Add(ErrorCodes.ErrorCode(errorCodes[nodeId]));
+			Debug.LogFormat("[Sysadmin #{0}] Recovering code {1} is valid for node #{2}", moduleId, validRecoveryCode, nodeId);
 			text[linePointer] = "Recovering...";
 			yield return Loader(.2f, 32, 10);
 			if (solved) yield break;
@@ -472,7 +474,9 @@ public class SysadminModule : MonoBehaviour {
 				yield return Loader(.2f, 16, 14);
 				if (solved) yield break;
 				WriteLine("Module solved");
+				command = "";
 				_forceSolved = false;
+				_solved = true;
 				BombModule.HandlePass();
 				shouldUpdateText = true;
 				yield break;
