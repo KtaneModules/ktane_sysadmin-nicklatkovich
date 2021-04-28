@@ -66,6 +66,7 @@ public class SysadminModule : MonoBehaviour {
 	private int linesCount = 1;
 	private int allocationsCount = 0;
 	private int requiredAllocationsCount = 0;
+	private float startingTime;
 	private string command = "";
 	private Server[] servers;
 	private string[] text = new string[LINES_COUNT];
@@ -82,6 +83,7 @@ public class SysadminModule : MonoBehaviour {
 	}
 
 	private void Activate() {
+		startingTime = Time.time;
 		KMSelectable selfSelectable = GetComponent<KMSelectable>();
 		selfSelectable.OnFocus += () => selected = true;
 		selfSelectable.OnDefocus += () => selected = false;
@@ -92,7 +94,7 @@ public class SysadminModule : MonoBehaviour {
 		foreach (int serverId in serverIds) {
 			Server server = new Server(serverId, Random.Range(1, 11));
 			servers[j++] = server;
-			Debug.LogFormat("[Sysadmin #{0}] Server #{1} created with {2} TB", moduleId, server.id, server.size);
+			Log(string.Format("Server #{0} created with {1} TB", server.id, server.size));
 		}
 		Server[] sortedServers;
 		{
@@ -113,7 +115,7 @@ public class SysadminModule : MonoBehaviour {
 				requiredAllocationsCount += 1;
 			} else maxAllocation = s.id;
 		}
-		Debug.LogFormat("[Sysadmin #{0}] Required allocations count: {1}", moduleId, requiredAllocationsCount);
+		Log("Required allocations count: " + requiredAllocationsCount);
 		for (int i = 0; i < 10; i++) Damage();
 		StartCoroutine(Virus());
 		typing = true;
@@ -147,7 +149,7 @@ public class SysadminModule : MonoBehaviour {
 
 	public void TwitchHandleForcedSolve() {
 		if (solved) return;
-		Debug.LogFormat("[Sysadmin #{0}] Module force-solved", _moduleId);
+		Log("Module force-solved");
 		_solved = true;
 		typing = false;
 		WriteLine("Module force solved");
@@ -157,7 +159,7 @@ public class SysadminModule : MonoBehaviour {
 	private IEnumerator Virus() {
 		while (!solved && damagedNodeIds.Count + recoveredNodesCount < MAX_DAMAGES_COUNT) {
 			Damage();
-			yield return new WaitForSeconds(Random.Range(0f, 20f));
+			yield return new WaitForSeconds(Random.Range(10f, 20f));
 		}
 	}
 
@@ -168,8 +170,9 @@ public class SysadminModule : MonoBehaviour {
 		if (allocatedNodes.Contains(damagedNodeId)) return;
 		if (serverIds.Contains(damagedNodeId) && servers.First((s) => s.id == damagedNodeId).allocation != null) return;
 		int totalDamagesCount = damagedNodeIds.Count + recoveredNodesCount;
+		if (totalDamagesCount >= MAX_DAMAGES_COUNT) return;
 		if (Random.Range(-1, totalDamagesCount) >= 0) return;
-		Debug.LogFormat("[Sysadmin #{0}] Node #{1} damaged", moduleId, damagedNodeId);
+		LogWithTime(string.Format("Node #{0} damaged", damagedNodeId));
 		damagedNodeIds.Add(damagedNodeId);
 		errorCodes[damagedNodeId] = ErrorCodes.RandomErrorCodeIndex();
 	}
@@ -249,21 +252,19 @@ public class SysadminModule : MonoBehaviour {
 		}
 		if (command == "sudo rm -rf /*") {
 			WriteLine("<color=red>Nice try, susadmin</color>");
-			Debug.LogFormat("[Sysadmin #{0}] Susadmin detected!", moduleId);
+			Log("Susadmin detected!");
 			BombModule.HandleStrike();
 			EndCommandProcessing();
 			yield break;
 		}
 		if (command == "revert") {
-			Debug.LogFormat("[Sysadmin #{0}] Reverting command entered", moduleId);
+			Log("Reverting command entered");
 			yield return HandleStrike();
 			EndCommandProcessing();
 			yield break;
 		}
 		if (command == "status") {
-			WriteLine(string.Format((
-				"Allocated servers: <color={0}>{1}</color>/<color={0}>{2}</color>"
-			), NUMBER_COLOR, allocationsCount, requiredAllocationsCount));
+			WriteLine(string.Format(("Allocated servers: <color={0}>{1}</color>/<color={0}>{2}</color>"), NUMBER_COLOR, allocationsCount, requiredAllocationsCount));
 			WriteLine(string.Format("Damaged nodes: <color={0}>{1}</color>", NUMBER_COLOR, damagedNodeIds.Count));
 			WriteLine(string.Format("Recovered nodes: <color={0}>{1}</color>", NUMBER_COLOR, recoveredNodesCount));
 			EndCommandProcessing();
@@ -332,7 +333,7 @@ public class SysadminModule : MonoBehaviour {
 			}
 			int nodeId = int.Parse(args[1]);
 			if (!damagedNodeIds.Contains(nodeId)) {
-				Debug.LogFormat("[Sysadmin #{0}] Trying to recover operational node #{1}", moduleId, nodeId);
+				LogWithTime("Trying to recover operational node #" + nodeId);
 				text[linePointer] = "Recovering...";
 				yield return Loader(.2f, 32, 10);
 				if (solved) yield break;
@@ -343,7 +344,7 @@ public class SysadminModule : MonoBehaviour {
 			}
 			string validRecoveryCode = ErrorCodes.ValidRecoveryCode(errorCodes[nodeId], this);
 			if (validRecoveryCode != args[2].ToUpper()) {
-				Debug.LogFormat("[Sysadmin #{0}] Invalid recovery code for #{1}. Entered: {2}. Expected: {3}", moduleId, nodeId, args[2].ToUpper(), validRecoveryCode);
+				LogWithTime(string.Format("Invalid recovery code for #{0}. Entered: {1}. Expected: {2}", nodeId, args[2].ToUpper(), validRecoveryCode));
 				text[linePointer] = "Recovering...";
 				yield return Loader(.2f, 32, 10);
 				if (solved) yield break;
@@ -354,7 +355,7 @@ public class SysadminModule : MonoBehaviour {
 				yield break;
 			}
 			_fixedErrorCodes.Add(ErrorCodes.ErrorCode(errorCodes[nodeId]));
-			Debug.LogFormat("[Sysadmin #{0}] Recovering code {1} is valid for node #{2}", moduleId, validRecoveryCode, nodeId);
+			LogWithTime(string.Format("Recovering code {0} is valid for node #{1}", validRecoveryCode, nodeId));
 			text[linePointer] = "Recovering...";
 			yield return Loader(.2f, 32, 10);
 			if (solved) yield break;
@@ -425,9 +426,7 @@ public class SysadminModule : MonoBehaviour {
 					yield break;
 				}
 				if (serverIds.Contains(storageId)) {
-					Debug.LogFormat(
-						"[Sysadmin #{0}] Trying to allocate server #{1} to server #{2}", moduleId, storageId, server.id
-					);
+					LogWithTime(string.Format("Trying to allocate server #{0} to server #{1}", storageId, server.id));
 					WriteLine("<color=red>ERROR</color>: unable allocate");
 					WriteLine(string.Format("Node <color=yellow>#{0}</color> is not data storage", storageId));
 					yield return HandleStrike();
@@ -436,9 +435,7 @@ public class SysadminModule : MonoBehaviour {
 					yield break;
 				}
 				if (allocatedNodes.Contains(storageId)) {
-					Debug.LogFormat((
-						"[Sysadmin #{0}] Trying to allocate allocated node #{1} to server #{2}"
-					), moduleId, storageId, server.id);
+					LogWithTime(string.Format("Trying to allocate allocated node #{0} to server #{1}", storageId, server.id));
 					WriteLine("<color=red>ERROR</color>: unable allocate");
 					WriteLine(string.Format("Node <color=yellow>#{0}</color> already allocated", storageId));
 					yield return HandleStrike();
@@ -456,7 +453,7 @@ public class SysadminModule : MonoBehaviour {
 				new Vector2Int(server.id - server.size, server.id - 1);
 			server.allocation = allocation;
 			allocationsCount += 1;
-			Debug.LogFormat("[Sysadmin #{0}] Server #{1} allocated {2}", moduleId, server.id, args[2]);
+			LogWithTime(string.Format("Server #{0} allocated {1}", server.id, args[2]));
 			WriteLine(string.Format(
 				"Nodes <color=yellow>[{0}-{1}]</color> allocated", allocation.x, allocation.y, server.id
 			));
@@ -468,7 +465,7 @@ public class SysadminModule : MonoBehaviour {
 			yield return Loader(.2f, 48, 10);
 			if (solved) yield break;
 			if (allocationsCount >= requiredAllocationsCount) {
-				Debug.LogFormat("[Sysadmin #{0}] Committed", moduleId);
+				LogWithTime("Committed");
 				WriteLine("Allocation completed");
 				text[linePointer] = "Solving module...";
 				yield return Loader(.2f, 16, 14);
@@ -479,9 +476,18 @@ public class SysadminModule : MonoBehaviour {
 				_solved = true;
 				BombModule.HandlePass();
 				shouldUpdateText = true;
+				if (fixedErrorCodes.Count == 0 || BombInfo.GetSolvableModuleIDs().All(id => id != "SouvenirModule")) yield break;
+				int secondsToTurnOffDisplay = 10;
+				for (int i = 0; i < secondsToTurnOffDisplay; i++) {
+					text[linePointer] = string.Format("Turn off display in {0}s", secondsToTurnOffDisplay - i);
+					shouldUpdateText = true;
+					yield return new WaitForSeconds(1f);
+				}
+				text = new string[LINES_COUNT];
+				shouldUpdateText = true;
 				yield break;
 			} else {
-				Debug.LogFormat("[Sysadmin #{0}] Trying to commit without required allocations", moduleId);
+				LogWithTime("Trying to commit without required allocations");
 				WriteLine("Allocation not completed");
 				yield return HandleStrike();
 				if (solved) yield break;
@@ -538,5 +544,15 @@ public class SysadminModule : MonoBehaviour {
 			text[i % LINES_COUNT]
 		)).Join("\n");
 		shouldUpdateText = false;
+	}
+
+	private void Log(string log) {
+		Debug.LogFormat("[Sysadmin #{0}] {1}", moduleId, log);
+	}
+
+	private void LogWithTime(string log) {
+		int diffTime = Mathf.FloorToInt(Time.time - startingTime);
+		string time = string.Format("{0}:{1}", diffTime / 60, (diffTime % 60).ToString().PadLeft(2, '0'));
+		Log(string.Format("[{0}] {1}", time, log));
 	}
 }
