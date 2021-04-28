@@ -15,6 +15,6 @@ MonoBehaviour:
   title: Sysadmin
   author: NickLatkovich
   description: A module in which you need to administer the network through the console.
-  version: 0.2.1
+  version: 0.2.2
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 2df384f6c1442fc4cb16ac20c418b846, type: 3}

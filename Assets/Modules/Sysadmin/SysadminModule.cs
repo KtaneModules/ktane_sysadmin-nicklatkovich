@@ -470,13 +470,14 @@ public class SysadminModule : MonoBehaviour {
 				text[linePointer] = "Solving module...";
 				yield return Loader(.2f, 16, 14);
 				if (solved) yield break;
-				WriteLine("Module solved");
+				text[linePointer] = "Module solved";
 				command = "";
 				_forceSolved = false;
 				_solved = true;
 				BombModule.HandlePass();
 				shouldUpdateText = true;
 				if (fixedErrorCodes.Count == 0 || BombInfo.GetSolvableModuleIDs().All(id => id != "SouvenirModule")) yield break;
+				linePointer = (linePointer + 1) % LINES_COUNT;
 				int secondsToTurnOffDisplay = 10;
 				for (int i = 0; i < secondsToTurnOffDisplay; i++) {
 					text[linePointer] = string.Format("Turn off display in {0}s", secondsToTurnOffDisplay - i);
