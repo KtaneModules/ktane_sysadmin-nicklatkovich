@@ -60,6 +60,7 @@ public class SysadminModule : MonoBehaviour {
 		}
 	}
 
+	private bool activated = false;
 	private bool typing = false;
 	private bool selected = false;
 	private bool shouldUpdateText = true;
@@ -120,6 +121,7 @@ public class SysadminModule : MonoBehaviour {
 		StartCoroutine(Virus());
 		typing = true;
 		shouldUpdateText = true;
+		activated = true;
 	}
 
 	private void Update() {
@@ -134,6 +136,10 @@ public class SysadminModule : MonoBehaviour {
 	}
 
 	public IEnumerator ProcessTwitchCommand(string command) {
+		if (!activated) {
+			yield return "sendtochat {0}, !{1} not activated";
+			yield break;
+		}
 		if (Regex.IsMatch(command, @"^[ a-zA-Z0-9-*/]{1,27}$")) {
 			this.command = command;
 			UpdateText();
